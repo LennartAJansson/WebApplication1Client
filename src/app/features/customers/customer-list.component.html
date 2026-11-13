@@ -1,0 +1,80 @@
+<header class="page-header">
+  <div>
+    <h1>Kunder</h1>
+    <p>Bläddra bland och hantera kunder.</p>
+  </div>
+  <a mat-flat-button routerLink="/customers/new" class="icon-label">
+    <span class="material-symbols-outlined" aria-hidden="true">add</span>
+    Lägg till kund
+  </a>
+</header>
+
+@if (loading()) {
+  <mat-progress-bar mode="indeterminate" aria-label="Hämtar kunder" />
+}
+
+@if (error()) {
+  <p class="error-message" role="alert">{{ error() }}</p>
+}
+
+@if (!loading() && !error() && customers().length === 0) {
+  <section class="empty-state">
+    <h2>Inga kunder ännu</h2>
+    <p>Lägg till en kund för att komma igång.</p>
+  </section>
+}
+
+@if (customers().length > 0) {
+  <div class="table-container">
+    <table mat-table [dataSource]="customers()" class="entity-table">
+      <ng-container matColumnDef="companyName">
+        <th mat-header-cell *matHeaderCellDef>Företag</th>
+        <td mat-cell *matCellDef="let customer">{{ customer.companyName }}</td>
+      </ng-container>
+      <ng-container matColumnDef="contactName">
+        <th mat-header-cell *matHeaderCellDef>Kontaktperson</th>
+        <td mat-cell *matCellDef="let customer">{{ customer.contactName }}</td>
+      </ng-container>
+      <ng-container matColumnDef="city">
+        <th mat-header-cell *matHeaderCellDef>Ort</th>
+        <td mat-cell *matCellDef="let customer">{{ customer.city }}</td>
+      </ng-container>
+      <ng-container matColumnDef="phone">
+        <th mat-header-cell *matHeaderCellDef>Telefon</th>
+        <td mat-cell *matCellDef="let customer">{{ customer.phone }}</td>
+      </ng-container>
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef>Åtgärder</th>
+        <td mat-cell *matCellDef="let customer" class="actions">
+          <a
+            mat-icon-button
+            [routerLink]="['/customers', customer.id]"
+            aria-label="Visa kund {{ customer.companyName }}"
+            title="Visa kund {{ customer.companyName }}"
+          >
+            <span class="material-symbols-outlined" aria-hidden="true">visibility</span>
+          </a>
+          <a
+            mat-icon-button
+            [routerLink]="['/customers', customer.id, 'edit']"
+            aria-label="Redigera kund {{ customer.companyName }}"
+            title="Redigera kund {{ customer.companyName }}"
+          >
+            <span class="material-symbols-outlined" aria-hidden="true">edit</span>
+          </a>
+          <button
+            mat-icon-button
+            type="button"
+            (click)="deleteCustomer(customer)"
+            aria-label="Radera kund {{ customer.companyName }}"
+            title="Radera kund {{ customer.companyName }}"
+          >
+            <span class="material-symbols-outlined" aria-hidden="true">delete</span>
+          </button>
+        </td>
+      </ng-container>
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+    </table>
+  </div>
+}

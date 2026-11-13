@@ -1,0 +1,44 @@
+<a mat-button [routerLink]="entity() === 'customer' ? '/customers' : '/employees'">
+  Tillbaka till {{ entity() === 'customer' ? 'kunder' : 'anställda' }}
+</a>
+
+@if (loading()) {
+  <mat-progress-bar mode="indeterminate" aria-label="Hämtar detaljer" />
+}
+
+@if (error()) {
+  <p class="error-message" role="alert">{{ error() }}</p>
+}
+
+@if (!loading() && !error()) {
+  <mat-card class="detail-card">
+    <mat-card-header>
+      <mat-card-title>{{ title() }}</mat-card-title>
+      <mat-card-subtitle>
+        {{ entity() === 'customer' ? 'Kunddetaljer' : 'Anställddetaljer' }}
+      </mat-card-subtitle>
+    </mat-card-header>
+    <mat-card-content>
+      <dl>
+        @for (field of fields(); track field.label) {
+          <div class="detail-row">
+            <dt>{{ field.label }}</dt>
+            <dd>{{ field.value || '—' }}</dd>
+          </div>
+        }
+      </dl>
+    </mat-card-content>
+    <mat-card-actions align="end">
+      <a
+        mat-flat-button
+        class="icon-label"
+        [routerLink]="entity() === 'customer'
+          ? ['/customers', id(), 'edit']
+          : ['/employees', id(), 'edit']"
+      >
+        <span class="material-symbols-outlined" aria-hidden="true">edit</span>
+        Redigera
+      </a>
+    </mat-card-actions>
+  </mat-card>
+}

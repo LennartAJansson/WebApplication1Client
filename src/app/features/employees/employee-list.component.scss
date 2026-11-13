@@ -1,0 +1,49 @@
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+h1,
+h2,
+p {
+  margin-top: 0;
+}
+
+.page-header p,
+.empty-state p {
+  margin-bottom: 0;
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.table-container {
+  overflow-x: auto;
+}
+
+.entity-table {
+  width: 100%;
+}
+
+.actions {
+  white-space: nowrap;
+}
+
+.error-message {
+  color: var(--mat-sys-error);
+}
+
+.empty-state {
+  padding: 2rem;
+  text-align: center;
+  border: 1px solid var(--mat-sys-outline-variant);
+  border-radius: 1rem;
+}
+
+@media (max-width: 600px) {
+  .page-header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}

@@ -1,0 +1,80 @@
+<header class="page-header">
+  <div>
+    <h1>Anställda</h1>
+    <p>Bläddra bland och hantera anställda.</p>
+  </div>
+  <a mat-flat-button routerLink="/employees/new" class="icon-label">
+    <span class="material-symbols-outlined" aria-hidden="true">add</span>
+    Lägg till anställd
+  </a>
+</header>
+
+@if (loading()) {
+  <mat-progress-bar mode="indeterminate" aria-label="Hämtar anställda" />
+}
+
+@if (error()) {
+  <p class="error-message" role="alert">{{ error() }}</p>
+}
+
+@if (!loading() && !error() && employees().length === 0) {
+  <section class="empty-state">
+    <h2>Inga anställda ännu</h2>
+    <p>Lägg till en anställd för att komma igång.</p>
+  </section>
+}
+
+@if (employees().length > 0) {
+  <div class="table-container">
+    <table mat-table [dataSource]="employees()" class="entity-table">
+      <ng-container matColumnDef="name">
+        <th mat-header-cell *matHeaderCellDef>Namn</th>
+        <td mat-cell *matCellDef="let employee">{{ employee.givenName }} {{ employee.surname }}</td>
+      </ng-container>
+      <ng-container matColumnDef="title">
+        <th mat-header-cell *matHeaderCellDef>Titel</th>
+        <td mat-cell *matCellDef="let employee">{{ employee.title }}</td>
+      </ng-container>
+      <ng-container matColumnDef="city">
+        <th mat-header-cell *matHeaderCellDef>Ort</th>
+        <td mat-cell *matCellDef="let employee">{{ employee.city }}</td>
+      </ng-container>
+      <ng-container matColumnDef="phone">
+        <th mat-header-cell *matHeaderCellDef>Telefon</th>
+        <td mat-cell *matCellDef="let employee">{{ employee.phone }}</td>
+      </ng-container>
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef>Åtgärder</th>
+        <td mat-cell *matCellDef="let employee" class="actions">
+          <a
+            mat-icon-button
+            [routerLink]="['/employees', employee.id]"
+            aria-label="Visa anställd {{ employee.givenName }} {{ employee.surname }}"
+            title="Visa anställd {{ employee.givenName }} {{ employee.surname }}"
+          >
+            <span class="material-symbols-outlined" aria-hidden="true">visibility</span>
+          </a>
+          <a
+            mat-icon-button
+            [routerLink]="['/employees', employee.id, 'edit']"
+            aria-label="Redigera anställd {{ employee.givenName }} {{ employee.surname }}"
+            title="Redigera anställd {{ employee.givenName }} {{ employee.surname }}"
+          >
+            <span class="material-symbols-outlined" aria-hidden="true">edit</span>
+          </a>
+          <button
+            mat-icon-button
+            type="button"
+            (click)="deleteEmployee(employee)"
+            aria-label="Radera anställd {{ employee.givenName }} {{ employee.surname }}"
+            title="Radera anställd {{ employee.givenName }} {{ employee.surname }}"
+          >
+            <span class="material-symbols-outlined" aria-hidden="true">delete</span>
+          </button>
+        </td>
+      </ng-container>
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+    </table>
+  </div>
+}

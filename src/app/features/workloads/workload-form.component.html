@@ -1,0 +1,66 @@
+<section class="form-page">
+  <a mat-button routerLink="/workloads">Tillbaka till arbetspass</a>
+
+  <h1>
+    <span class="material-symbols-outlined" aria-hidden="true">play_arrow</span>
+    Starta arbetspass
+  </h1>
+
+  @if (loading()) {
+    <mat-progress-bar mode="indeterminate" aria-label="Hämtar anställda och kunder" />
+  }
+
+  @if (error()) {
+    <p class="error-message" role="alert">{{ error() }}</p>
+  }
+
+  @if (!loading() && !error() && (employees().length === 0 || customers().length === 0)) {
+    <section class="empty-state">
+      <h2>Det går inte att starta ett arbetspass ännu</h2>
+      <p>Lägg till minst en anställd och en kund först.</p>
+    </section>
+  }
+
+  @if (!loading() && !error() && employees().length > 0 && customers().length > 0) {
+    <form [formGroup]="form" (ngSubmit)="submit()">
+      <mat-form-field appearance="outline">
+        <mat-label>Anställd</mat-label>
+        <mat-select formControlName="employeeId">
+          @for (employee of employees(); track employee.id) {
+            <mat-option [value]="employee.id">
+              {{ employee.givenName }} {{ employee.surname }}
+            </mat-option>
+          }
+        </mat-select>
+        @if (form.controls.employeeId.hasError('required') && form.controls.employeeId.touched) {
+          <mat-error>Välj en anställd.</mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Kund</mat-label>
+        <mat-select formControlName="customerId">
+          @for (customer of customers(); track customer.id) {
+            <mat-option [value]="customer.id">{{ customer.companyName }}</mat-option>
+          }
+        </mat-select>
+        @if (form.controls.customerId.hasError('required') && form.controls.customerId.touched) {
+          <mat-error>Välj en kund.</mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="notes-field">
+        <mat-label>Anteckning (valfri)</mat-label>
+        <textarea matInput formControlName="notes" rows="3"></textarea>
+      </mat-form-field>
+
+      <div class="form-actions">
+        <a mat-button routerLink="/workloads">Avbryt</a>
+        <button mat-flat-button type="submit" [disabled]="saving()">
+          <span class="material-symbols-outlined" aria-hidden="true">play_arrow</span>
+          {{ saving() ? 'Startar…' : 'Starta arbetspass' }}
+        </button>
+      </div>
+    </form>
+  }
+</section>

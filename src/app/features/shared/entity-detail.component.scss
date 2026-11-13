@@ -1,0 +1,36 @@
+.detail-card {
+  max-width: 46rem;
+  margin: 1rem auto 0;
+}
+
+dl {
+  margin: 1.5rem 0 0;
+}
+
+.detail-row {
+  display: grid;
+  grid-template-columns: minmax(10rem, 1fr) 2fr;
+  gap: 1rem;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid var(--mat-sys-outline-variant);
+}
+
+dt {
+  color: var(--mat-sys-on-surface-variant);
+}
+
+dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.error-message {
+  color: var(--mat-sys-error);
+}
+
+@media (max-width: 480px) {
+  .detail-row {
+    grid-template-columns: 1fr;
+    gap: 0.25rem;
+  }
+}

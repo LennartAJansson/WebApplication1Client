@@ -1,0 +1,108 @@
+<header class="page-header">
+  <div>
+    <h1>Arbetspass</h1>
+    <p>Visa och filtrera arbetspass samt stoppa pågående pass.</p>
+  </div>
+  <a mat-flat-button routerLink="/workloads/new" class="icon-label">
+    <span class="material-symbols-outlined" aria-hidden="true">play_arrow</span>
+    Starta arbetspass
+  </a>
+</header>
+
+@if (loading()) {
+  <mat-progress-bar mode="indeterminate" aria-label="Hämtar arbetspass" />
+}
+
+@if (error()) {
+  <p class="error-message" role="alert">{{ error() }}</p>
+}
+
+@if (!loading() && !error()) {
+  <section class="filters" aria-label="Filtrera arbetspass">
+    <mat-form-field appearance="outline">
+      <mat-label>Anställd</mat-label>
+      <mat-select
+        [value]="employeeFilter()"
+        (selectionChange)="employeeFilter.set($event.value)"
+      >
+        <mat-option value="">Alla anställda</mat-option>
+        @for (employee of employees(); track employee.id) {
+          <mat-option [value]="employee.id">
+            {{ employee.givenName }} {{ employee.surname }}
+          </mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Kund</mat-label>
+      <mat-select
+        [value]="customerFilter()"
+        (selectionChange)="customerFilter.set($event.value)"
+      >
+        <mat-option value="">Alla kunder</mat-option>
+        @for (customer of customers(); track customer.id) {
+          <mat-option [value]="customer.id">{{ customer.companyName }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+  </section>
+
+  @if (rows().length === 0) {
+    <section class="empty-state">
+      <h2>{{ workloads().length ? 'Inga arbetspass matchar filtreringen' : 'Inga arbetspass ännu' }}</h2>
+      @if (workloads().length === 0) {
+        <p>Starta ett arbetspass för att se det här.</p>
+      }
+    </section>
+  } @else {
+    <div class="table-container">
+      <table mat-table [dataSource]="rows()" class="workload-table">
+        <ng-container matColumnDef="start">
+          <th mat-header-cell *matHeaderCellDef>Start</th>
+          <td mat-cell *matCellDef="let workload">
+            {{ workload.start | date: 'yyyy-MM-dd HH:mm' }}
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="stop">
+          <th mat-header-cell *matHeaderCellDef>Slut</th>
+          <td mat-cell *matCellDef="let workload">
+            {{ workload.stop ? (workload.stop | date: 'yyyy-MM-dd HH:mm') : 'Pågår' }}
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="employee">
+          <th mat-header-cell *matHeaderCellDef>Anställd</th>
+          <td mat-cell *matCellDef="let workload">{{ workload.employeeName }}</td>
+        </ng-container>
+        <ng-container matColumnDef="customer">
+          <th mat-header-cell *matHeaderCellDef>Kund</th>
+          <td mat-cell *matCellDef="let workload">{{ workload.customerName }}</td>
+        </ng-container>
+        <ng-container matColumnDef="notes">
+          <th mat-header-cell *matHeaderCellDef>Anteckning</th>
+          <td mat-cell *matCellDef="let workload">{{ workload.notes || '—' }}</td>
+        </ng-container>
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef>Åtgärd</th>
+          <td mat-cell *matCellDef="let workload">
+            @if (!workload.stop) {
+              <button
+                mat-button
+                type="button"
+                class="icon-label"
+                [disabled]="stoppingId() === workload.id"
+                [attr.aria-label]="'Stoppa arbetspass för ' + workload.employeeName"
+                (click)="stopWorkload(workload)"
+              >
+                <span class="material-symbols-outlined" aria-hidden="true">stop_circle</span>
+                {{ stoppingId() === workload.id ? 'Stoppar…' : 'Stoppa' }}
+              </button>
+            }
+          </td>
+        </ng-container>
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+      </table>
+    </div>
+  }
+}

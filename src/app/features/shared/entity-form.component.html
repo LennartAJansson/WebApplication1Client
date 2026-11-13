@@ -1,0 +1,108 @@
+<section class="form-page">
+  <a mat-button [routerLink]="entity() === 'customer' ? '/customers' : '/employees'">
+    Tillbaka till {{ entity() === 'customer' ? 'kunder' : 'anställda' }}
+  </a>
+
+  <h1>
+    <span class="material-symbols-outlined" aria-hidden="true">
+      {{ id() ? 'edit' : 'add' }}
+    </span>
+    {{ id() ? 'Redigera' : 'Lägg till' }}
+    {{ entity() === 'customer' ? 'kund' : 'anställd' }}
+  </h1>
+
+  @if (loading()) {
+    <mat-progress-bar mode="indeterminate" aria-label="Hämtar uppgifter" />
+  }
+
+  @if (error()) {
+    <p class="error-message" role="alert">{{ error() }}</p>
+  }
+
+  @if (!loading() && (!id() || !error())) {
+    <form [formGroup]="form" (ngSubmit)="submit()">
+      @if (entity() === 'customer') {
+        <mat-form-field appearance="outline">
+          <mat-label>Företagsnamn</mat-label>
+          <input matInput formControlName="companyName" autocomplete="organization" />
+          @if (form.controls.companyName.hasError('required')) {
+            <mat-error>Företagsnamn krävs.</mat-error>
+          }
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Organisationsnummer</mat-label>
+          <input matInput formControlName="organizationNumber" />
+          @if (form.controls.organizationNumber.hasError('required')) {
+            <mat-error>Organisationsnummer krävs.</mat-error>
+          }
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Kontaktperson</mat-label>
+          <input matInput formControlName="contactName" autocomplete="name" />
+          @if (form.controls.contactName.hasError('required')) {
+            <mat-error>Kontaktperson krävs.</mat-error>
+          }
+        </mat-form-field>
+      } @else {
+        <mat-form-field appearance="outline">
+          <mat-label>Personnummer</mat-label>
+          <input matInput formControlName="ssid" autocomplete="off" />
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Titel</mat-label>
+          <input matInput formControlName="title" />
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Förnamn</mat-label>
+          <input matInput formControlName="givenName" autocomplete="given-name" />
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Efternamn</mat-label>
+          <input matInput formControlName="surname" autocomplete="family-name" />
+        </mat-form-field>
+      }
+
+      <mat-form-field appearance="outline">
+        <mat-label>Gatuadress</mat-label>
+        <input matInput formControlName="street" autocomplete="street-address" />
+        @if (entity() === 'customer' && form.controls.street.hasError('required')) {
+          <mat-error>Gatuadress krävs.</mat-error>
+        }
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Postnummer</mat-label>
+        <input matInput formControlName="postalCode" autocomplete="postal-code" />
+        @if (entity() === 'customer' && form.controls.postalCode.hasError('required')) {
+          <mat-error>Postnummer krävs.</mat-error>
+        }
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Ort</mat-label>
+        <input matInput formControlName="city" autocomplete="address-level2" />
+        @if (entity() === 'customer' && form.controls.city.hasError('required')) {
+          <mat-error>Ort krävs.</mat-error>
+        }
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Telefon</mat-label>
+        <input matInput type="tel" formControlName="phone" autocomplete="tel" />
+        @if (entity() === 'customer' && form.controls.phone.hasError('required')) {
+          <mat-error>Telefonnummer krävs.</mat-error>
+        }
+      </mat-form-field>
+
+      <div class="form-actions">
+        <a mat-button [routerLink]="entity() === 'customer' ? '/customers' : '/employees'">
+          Avbryt
+        </a>
+        <button
+          mat-flat-button
+          type="submit"
+          [disabled]="saving() || loading() || (id() !== null && !!error())"
+        >
+          {{ saving() ? 'Sparar…' : 'Spara' }}
+        </button>
+      </div>
+    </form>
+  }
+</section>
