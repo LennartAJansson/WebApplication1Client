@@ -14,6 +14,30 @@ Once the server is running, open your browser and navigate to `http://localhost:
 
 ## Code scaffolding
 
+### Recreate the folder structure
+
+Run [scripts/New-ClientStructure.ps1](scripts/New-ClientStructure.ps1) from PowerShell
+to create a separate Angular project using only CLI-generated boilerplate:
+
+```powershell
+.\scripts\New-ClientStructure.ps1 -ProjectName DemoClient -ParentDirectory D:\Projects
+```
+
+The parent directory must exist; the target project directory must not already
+exist. Node.js compatible with Angular CLI 22.2.6, npm, and internet access are
+required. The script runs `ng new`, installs Material/CDK and Prettier using
+`npm install`, generates the components, API service, interfaces, guard,
+interceptor, and environments, then builds the project. It skips Git initialization.
+New files within a project are generated with `ng generate`, not `ng new`.
+
+The generated files contain only the CLI's default boilerplate, not this app's
+implementation. Routes remain empty and the guard/interceptor are not registered.
+Material is installed but no theme or toolbar is configured. `api.models.ts` and
+`api-error.ts` each contain an empty generated interface. The dialog placeholder
+has separate HTML/SCSS files. Environment generation follows Angular's defaults:
+`environment.ts` for production and `environment.development.ts` for development.
+Component, guard, and interceptor tests are skipped; root and service tests remain.
+
 Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
 
 ```bash
@@ -63,9 +87,18 @@ routes are eagerly loaded; workload views use `loadComponent` and are lazy-loade
 - `/workloads` lists and filters work periods by employee and/or customer.
   Use `/workloads/new` to start a period; active periods can be stopped from the list.
 
-To lazy-load a standalone page, remove its static component import and use
-`loadComponent` with a dynamic import instead. For example, the customer list route
-could be written like this:
+## Lazy loading
+
+The workload routes already use lazy loading. To convert an eagerly loaded
+standalone page:
+
+1. Replace `component: CustomerListComponent` with `loadComponent` and a dynamic
+   import.
+2. Remove the static `CustomerListComponent` import from `src/app/app.routes.ts`
+   once no other route uses it.
+3. Keep any existing `canActivate` and `data` properties on the route.
+
+For example, the customer list route could be written like this:
 
 ```ts
 {
@@ -75,6 +108,10 @@ could be written like this:
       .then((m) => m.CustomerListComponent),
 }
 ```
+
+Angular creates a separate lazy chunk for the dynamically imported page, which is
+loaded when the route is visited. A remaining eager reference to the same component
+can keep it in the initial bundle.
 
 ## API integration
 
@@ -105,6 +142,19 @@ loadCustomers(): void {
   });
 }
 ```
+
+## Guard and interceptor placeholders
+
+`placeholderGuard` in `src/app/core/guards/placeholder.guard.ts` is connected to the
+customer detail route (`customers/:id`) via `canActivate` in `src/app/app.routes.ts`.
+It currently always allows navigation. Replace its body with an access check and,
+if needed, return a `UrlTree` to redirect. Apply it to other routes via their
+`canActivate` arrays. Client-side guards do not replace authorization in the API.
+
+`placeholderInterceptor` in `src/app/core/interceptors/placeholder.interceptor.ts`
+is registered via `provideHttpClient(withInterceptors([placeholderInterceptor]))`
+in `src/app/app.config.ts`. It currently forwards every request unchanged. This is
+the extension point for shared request headers or response handling.
 
 ## End-to-end tests
 

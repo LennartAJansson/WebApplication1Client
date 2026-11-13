@@ -1,4 +1,5 @@
 import { Routes } from '@angular/router';
+import { placeholderGuard } from './core/guards/placeholder.guard';
 import { CustomerListComponent } from './features/customers/customer-list.component';
 import { EmployeeListComponent } from './features/employees/employee-list.component';
 import { EntityDetailComponent } from './features/shared/entity-detail.component';
@@ -9,7 +10,12 @@ export const routes: Routes = [
   { path: 'customers', component: CustomerListComponent },
   { path: 'customers/new', component: EntityFormComponent, data: { entity: 'customer' } },
   { path: 'customers/:id/edit', component: EntityFormComponent, data: { entity: 'customer' } },
-  { path: 'customers/:id', component: EntityDetailComponent, data: { entity: 'customer' } },
+  {
+    path: 'customers/:id',
+    component: EntityDetailComponent,
+    canActivate: [placeholderGuard],
+    data: { entity: 'customer' },
+  },
   { path: 'employees', component: EmployeeListComponent },
   { path: 'employees/new', component: EntityFormComponent, data: { entity: 'employee' } },
   { path: 'employees/:id/edit', component: EntityFormComponent, data: { entity: 'employee' } },
